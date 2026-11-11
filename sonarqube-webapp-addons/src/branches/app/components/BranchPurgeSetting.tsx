@@ -18,10 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import { Spinner } from '@sonarsource/echoes-react';
-import { HelperHintIcon } from '~design-system';
+import { Spinner, ToggleTip } from '@sonarsource/echoes-react';
 import { Switch } from '~adapters/components/common/Switch';
-import Tooltip from '~sq-server-commons/components/controls/Tooltip';
 import { translate } from '~sq-server-commons/helpers/l10n';
 import { useExcludeFromPurgeMutation } from '~sq-server-commons/queries/branch';
 import { isMainBranch } from '~shared/helpers/branch-like';
@@ -54,15 +52,12 @@ export default function BranchPurgeSetting(props: Props) {
       />
       <Spinner isLoading={isPending} className="sw-ml-1" />
       {isTheMainBranch && (
-        <span className="sw-ml-1">
-          <Tooltip
-            content={translate(
-              'project_branch_pull_request.branch.auto_deletion.main_branch_tooltip',
-            )}
-          >
-            <HelperHintIcon aria-label={translate('help')} />
-          </Tooltip>
-        </span>
+        <ToggleTip
+          className="sw-ml-1"
+          description={translate(
+            'project_branch_pull_request.branch.auto_deletion.main_branch_tooltip',
+          )}
+        />
       )}
     </>
   );
