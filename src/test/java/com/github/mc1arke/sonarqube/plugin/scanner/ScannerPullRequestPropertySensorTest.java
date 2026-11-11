@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 Michael Clarke
+ * Copyright (C) 2020-2026 Michael Clarke
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.utils.System2;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 class ScannerPullRequestPropertySensorTest {
@@ -36,7 +35,7 @@ class ScannerPullRequestPropertySensorTest {
     private final ScannerPullRequestPropertySensor sensor = new ScannerPullRequestPropertySensor(system2);
 
     @Test
-    void testPropertySensorWithGitlabCIEnvValues() {
+    void shouldReportAllGitlabVariablesFromEnvironment() {
         when(system2.envVariable("GITLAB_CI")).thenReturn("true");
         when(system2.envVariable("CI_API_V4_URL")).thenReturn("value");
         when(system2.envVariable("CI_PROJECT_PATH")).thenReturn("value");
@@ -45,21 +44,21 @@ class ScannerPullRequestPropertySensorTest {
 
         sensor.execute(context);
 
-        verify(context, times(1)).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PROJECT_URL, "value");
-        verify(context, times(1)).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PIPELINE_ID, "value");
-        verify(context, times(2)).addContextProperty(anyString(), anyString());
+        verify(context).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PROJECT_URL, "value");
+        verify(context).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PIPELINE_ID, "value");
+        verifyNoMoreInteractions(context);
     }
 
     @Test
-    void testPropertySensorWithGitlabEnvValues() {
+    void shouldReportGitlabVariablesFromEnvironmentWhenMinimalPropertiesSet() {
         when(system2.envVariable("GITLAB_CI")).thenReturn("true");
         when(system2.envVariable("CI_MERGE_REQUEST_PROJECT_URL")).thenReturn("value");
         when(system2.envVariable("CI_PIPELINE_ID")).thenReturn("value");
 
         sensor.execute(context);
 
-        verify(context, times(1)).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PROJECT_URL, "value");
-        verify(context, times(1)).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PIPELINE_ID, "value");
-        verify(context, times(2)).addContextProperty(anyString(), anyString());
+        verify(context).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PROJECT_URL, "value");
+        verify(context).addContextProperty(GitlabMergeRequestDecorator.PULLREQUEST_GITLAB_PIPELINE_ID, "value");
+        verifyNoMoreInteractions(context);
     }
 }

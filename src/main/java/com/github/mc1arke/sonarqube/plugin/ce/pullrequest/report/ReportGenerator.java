@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2025 Michael Clarke
+ * Copyright (C) 2022-2026 Michael Clarke
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -75,7 +75,7 @@ public class ReportGenerator {
 
         return AnalysisIssueSummary.builder()
                 .withIssueUrl(getIssueUrl(issue, analysisDetails))
-                .withMessage(issue.getMessage())
+                .withMessage(issue.getMessage().orElse(null))
                 .build();
     }
 
@@ -124,8 +124,7 @@ public class ReportGenerator {
                 .withNewDuplications(newDuplications)
                 .withFailedQualityGateConditions(failedConditions.stream()
                         .map(ReportGenerator::formatQualityGateCondition)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
+                        .flatMap(Optional::stream)
                         .toList())
                 .withStatusDescription(QualityGate.Status.OK == analysisDetails.getQualityGateStatus() ? "Passed" : "Failed")
                 .withStatusImageUrl(QualityGate.Status.OK == analysisDetails.getQualityGateStatus()
